@@ -51,6 +51,7 @@
             </div>
             <div class="w3_search">
                 <form action="#" method="post">
+                    {% csrf_token %}
                     <input type="text" name="Search" placeholder="Search" required="">
                     <input type="submit" value="Go">
                 </form>
@@ -88,21 +89,21 @@
                             </div>
                             <div class="form">
                                 <h3>Login to your account</h3>
-                                <form action="#" method="post">
+                                <form action="{% url 'login' %}" method="post">
                                     {% csrf_token %}
-                                    <input type="text" name="Username" placeholder="Username" required="">
-                                    <input type="password" name="Password" placeholder="Password" required="">
+                                    <input type="text" name="username" placeholder="Username" required="">
+                                    <input type="password" name="password" placeholder="Password" required="">
                                     <input type="submit" value="Login">
                                 </form>
                             </div>
                             <div class="form">
                                 <h3>Create an account</h3>
-                                <form action="#" method="post">
+                                <form action="{% url 'register_user' %}" method="post">
                                     {% csrf_token %}
-                                    <input type="text" name="Username" placeholder="Username" required="">
-                                    <input type="password" name="Password" placeholder="Password" required="">
-                                    <input type="email" name="Email" placeholder="Email Address" required="">
-                                    <input type="text" name="Phone" placeholder="Phone Number" required="">
+                                    <input type="text" name="username" placeholder="Username" required="">
+                                    <input type="password" name="password1" placeholder="Password" required="">
+                                    <input type="password" name="password2" placeholder="Repeat Password"
+                                           required="">
                                     <input type="submit" value="Register">
                                 </form>
                             </div>
@@ -178,42 +179,27 @@
                             </li>
                             <li><a href="{% static 'Template/series.html' %}">tv - series</a></li>
                             <li><a href="{% static 'Template/news.html' %}">news</a></li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Country <b
-                                        class="caret"></b></a>
-                                <ul class="dropdown-menu multi-column columns-3">
-                                    <li>
-                                        <div class="col-sm-4">
-                                            <ul class="multi-column-dropdown">
-                                                <li><a href="{% static 'Template/genres.html' %}">Asia</a></li>
-                                                <li><a href="{% static 'Template/genres.html' %}">France</a></li>
-                                                <li><a href="{% static 'Template/genres.html' %}">Taiwan</a></li>
-                                                <li><a href="{% static 'Template/genres.html' %}">United States</a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <ul class="multi-column-dropdown">
-                                                <li><a href="{% static 'Template/genres.html' %}">China</a></li>
-                                                <li><a href="{% static 'Template/genres.html' %}">HongCong</a></li>
-                                                <li><a href="{% static 'Template/genres.html' %}">Japan</a></li>
-                                                <li><a href="{% static 'Template/genres.html' %}">Thailand</a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <ul class="multi-column-dropdown">
-                                                <li><a href="{% static 'Template/genres.html' %}">Euro</a></li>
-                                                <li><a href="{% static 'Template/genres.html' %}">India</a></li>
-                                                <li><a href="{% static 'Template/genres.html' %}">Korea</a></li>
-                                                <li><a href="{% static 'Template/genres.html' %}">United Kingdom</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="clearfix"></div>
-                                    </li>
-                                </ul>
-                            </li>
                             <li><a href="{% static 'Template/short-codes.html' %}">Short Codes</a></li>
                             <li><a href="{% static 'Template/list.html' %}">A - z list</a></li>
+                            {% if request.user.is_superuser %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options<b
+                                            class="caret"></b></a>
+                                    <ul class="dropdown-menu multi-column columns-3">
+                                        <li>
+                                            <div class="col-sm-4">
+                                                <ul class="multi-column-dropdown">
+                                                    <li><a href="{% url 'register_movie' %}">Register Movies</a></li>
+                                                    <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
+                                                    <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
+                                                    <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
+                                                </ul>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
                         </ul>
                     </nav>
                 </div>

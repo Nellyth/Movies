@@ -6,9 +6,9 @@ from apps.movies.forms import UserForm, MoviesForm
 from apps.movies.models import Movie
 
 
-class signup(CreateView):
+class SignUp(CreateView):
     model = User
-    template_name = 'Register_user.html'
+    template_name = 'index.html'
     form_class = UserForm
     success_url = reverse_lazy('index')
 

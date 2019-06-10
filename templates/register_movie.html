@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container" style="background-image: url({% static 'image/asd.jpg' %}); width: 100%; height: 100%;">
         <div class="container" style="width: 60%; border:1px solid black; margin-top: 2%; margin-bottom: 2%;
-            background: white">
+            background: white; padding-top: 2%;">
             <h2 class="text-center">Register Movie</h2>
             <form class="form-signin" method="post">
                 {% csrf_token %}
@@ -85,9 +85,14 @@
                             {{ form.actors }}
                         </div>
                     </div>
-                    <button class="btn btn-lg btn-secondary btn-block text-uppercase"
-                            type="submit"><i class="fa fa-save mr-2"></i>Save
-                    </button>
+                    <hr style="width:75%; border-color: black">
+                    <div class="col-md-8 col-md-offset-2">
+                        <div class="form-group text-center">
+                            <button class="btn btn-primary text-uppercase"
+                                    type="submit"><i class="fa fa-save mr-2"></i>Save
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
