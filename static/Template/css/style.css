@@ -188,7 +188,23 @@ ul.dropdown-menu.multi-column {
     left: 0;
     padding: 1em;
 }
-ul.dropdown-menu.multi-column ul li a:hover{
+ul.dropdown-menu.multi-column1 ul li a:hover{
+	color:#FF8D1B;
+}
+
+ul.dropdown-menu.multi-column1 ul li{
+    display:block;
+	margin-bottom:.5em;
+}
+ul.dropdown-menu.multi-column1 ul li a{
+	color:#212121;
+}
+ul.dropdown-menu.multi-column1 {
+    width: 280px;
+    left: 0;
+    padding: 1em;
+}
+ul.dropdown-menu.multi-column1 ul li a:hover{
 	color:#FF8D1B;
 }
 /*-- //nav --*/

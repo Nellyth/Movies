@@ -5,7 +5,7 @@
         <div class="container" style="width: 60%; border:1px solid black; margin-top: 2%; margin-bottom: 2%;
             background: white; padding-top: 2%;">
             <h2 class="text-center">Register Movie</h2>
-            <form class="form-signin" method="post">
+            <form role="form" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
@@ -26,7 +26,7 @@
                         <div class="form-group">
                             <label class="upper"
                                    for="{{ form.poster.name }}">{{ form.poster.label }}</label>
-                            {{ form.poster }}
+                            <input type="file" name="poster" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-8 col-md-offset-2">
@@ -38,16 +38,8 @@
                     </div>
                     <div class="col-md-8 col-md-offset-2">
                         <div class="form-group">
-                            <label class="upper"
-                                   for="{{ form.trailer_url.name }}">{{ form.trailer_url.label }}</label>
-                            {{ form.trailer_url }}
-                        </div>
-                    </div>
-                    <div class="col-md-8 col-md-offset-2">
-                        <div class="form-group">
-                            <label class="upper"
-                                   for="{{ form.rating.name }}">{{ form.rating.label }}</label>
-                            {{ form.rating }}
+                            <label class="upper" for="trailer_url">Trailer Url</label>
+                            <input type="url" name="trailer_url" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-8 col-md-offset-2">

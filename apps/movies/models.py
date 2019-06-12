@@ -8,12 +8,11 @@ def movie_directory_path(instance, filename):
 
 
 class Movie(models.Model):
-    title = models.CharField(max_length=25, unique=True, null=False)
+    title = models.CharField(max_length=40, unique=True, null=False)
     duration = models.IntegerField(null=False)
     poster = models.ImageField(upload_to=movie_directory_path, null=False)
-    detail = models.TextField(null=False, max_length=150)
+    detail = models.TextField(null=False, max_length=500)
     trailer_url = models.URLField(null=True, blank=True)
-    rating = models.IntegerField(choices=movie_rating, null=False)
     genre = models.CharField(max_length=25, null=False, choices=movie_genre)
     original_language = models.ForeignKey('Language', null=True, on_delete=models.SET_NULL)
     country = models.ForeignKey('Country', null=True, on_delete=models.SET_NULL)
@@ -27,6 +26,7 @@ class Movie(models.Model):
 class MovieRate(models.Model):
     movie = models.ForeignKey('Movie', null=False, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    rating = models.IntegerField(choices=movie_rating, null=False)
     comment = models.TextField(null=False, max_length=150)
 
     def __str__(self):

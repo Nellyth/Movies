@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from apps.movies.models import Movie
+from apps.movies.models import Movie, MovieRate
 from apps.movies.choices import movie_genre, movie_rating
 
 
@@ -36,7 +36,6 @@ class MoviesForm(forms.ModelForm):
             'poster',
             'detail',
             'trailer_url',
-            'rating',
             'genre',
             'original_language',
             'country',
@@ -50,7 +49,6 @@ class MoviesForm(forms.ModelForm):
             'poster': 'Poster',
             'detail': 'Detail',
             'trailer_url': 'Trailer url',
-            'rating': 'Rating',
             'genre': 'Genre',
             'original_language': 'Original language',
             'country': 'Country',
@@ -61,11 +59,32 @@ class MoviesForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'duration': forms.NumberInput(attrs={'class': 'form-control'}),
-            'detail': forms.TextInput(attrs={'class': 'form-control'}),
-            'rating': forms.Select(choices=movie_genre, attrs={'class': 'form-control'}),
-            'genre': forms.Select(choices=movie_rating, attrs={'class': 'form-control'}),
-            'original_language': forms.Select(),
-            'country': forms.Select(),
-            'directors': forms.Select(),
-            'actors': forms.Select(),
+            'detail': forms.Textarea(attrs={'class': 'form-control'}),
+            'genre': forms.Select(choices=movie_genre, attrs={'class': 'form-control'}),
+            'original_language': forms.Select(attrs={'class': 'form-control'}),
+            'country': forms.Select(attrs={'class': 'form-control'}),
+            'directors': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'actors': forms.SelectMultiple(attrs={'class': 'form-control'}),
+        }
+
+
+class RatingMoviesForm(forms.ModelForm):
+    class Meta:
+        model = MovieRate
+        fields = [
+            'movie',
+            'rating',
+            'comment'
+        ]
+
+        labels = {
+            'movie': 'Movie',
+            'rating': 'Rating',
+            'comment': 'Comment'
+        }
+
+        widgets = {
+            'movie': forms.Select(attrs={'class': 'form-control'}),
+            'rating': forms.Select(choices=movie_rating, attrs={'class': 'form-control'}),
+            'comment': forms.Textarea(attrs={'class': 'form-control'}),
         }

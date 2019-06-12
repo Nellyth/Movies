@@ -4,38 +4,13 @@
     <!-- banner -->
     <div id="slidey" style="display:none;">
         <ul>
-            <li><img src="{% static 'image/5.jpg' %}" alt=" ">
-                <p class='title'>Quan zhi fa shi</p>
-                <p class='description'>He woke up in a familiar world that has changed enormously. His school has
-                    become a school that teaches magic, encouraging everyone to become a powerful magician.</p></li>
-            <li><img src="{% static 'image/2.jpg' %}" alt=" ">
-                <p class='title'>Black Clover</p>
-                <p class='description'>Black Clover, abbreviated as BlaClo, is a manga series written and illustrated by
-                    Yuki Tabata. The series is published in the Shonen Jump weekly magazine of the Shueisha publishing
-                    house.</p></li>
-            <li><img src="{% static 'image/3.jpg' %}" alt=" ">
-                <p class='title'>Fairy Tail</p>
-                <p class='description'>Fairy Tail is an adventure and fantasy manga written and illustrated by Hiro
-                    Mashima, published for the first time on August 23, 2006 in Shōnen Magazine, by the Japanese
-                    publisher Kōdansha. There are 545 printed chapters, which are compiled in 63 volumes, until their
-                    completion in July 2017.</p></li>
-            <li><img src="{% static 'image/4.jpg' %}" alt=" ">
-                <p class='title'>Death Note</p>
-                <p class='description'>Death Note is a manga series written by Tsugumi Ōba and illustrated by Takeshi
-                    Obata, and whose adaptation to anime series was directed by Tetsurō Araki. It also has several
-                    movies and video games. The story centers on Light Yagami, a high school student.</p></li>
-            <li><img src="{% static 'image/6.jpg' %}" alt=" ">
-                <p class='title'>Ao no Exorcist</p>
-                <p class='description'>Ao no Exorcist is an action and supernatural manga series written and illustrated
-                    by Kazue Katō. It has been serialized in the Jump Square magazine of the Shūeisha publishing house
-                    since April 4, 2009. To date, the manga has compiled a total of twenty volumes in tankōbon
-                    format.</p></li>
-            <li><img src="{% static 'image/7.jpg' %}" alt=" ">
-                <p class='title'>Naruto Shippuden</p>
-                <p class='description'>Naruto is a manga series written and illustrated by Masashi Kishimoto. The play
-                    tells the story of a teenage ninja named Naruto Uzumaki, who aspires to become a Hokage, leader of
-                    his village, with the purpose of being recognized as an important person within the village and
-                    among his companions.</p></li>
+            {% for object in object_list %}
+                <li>
+                    <img src="{{ object.poster.url }}" alt=" ">
+                    <p class='title'><a style="color: black" href="{% url 'movie_detail' object.id %}">{{ object.title }}</a></p>
+                    <p class='description'>{{ object.detail }}</p>
+                </li>>
+            {% endfor %}
         </ul>
     </div>
     <script src="{% static 'Template/js/jquery.slidey.js' %}"></script>

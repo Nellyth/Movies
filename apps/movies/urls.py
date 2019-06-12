@@ -2,12 +2,20 @@ from django.conf.urls import url
 from django.contrib.auth.views import LoginView, logout_then_login
 from django.urls import path
 from django.views.generic import TemplateView
-from apps.movies.views import SignUp, register_movie
+from apps.movies.views import SignUp, RegisterMovie, Index, MovieList, MovieUpdate, MovieDelete, MovieDetail, \
+    RegisterMovieRating
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name="index.html"), name='index'),
-    url(r'accounts/login', LoginView.as_view(template_name='index.html'), name="login"),
-    url(r'logout', logout_then_login, name='logout'),
-    url(r'register_user', SignUp.as_view(), name='register_user'),
-    url(r'register_movie', register_movie.as_view(), name='register_movie')
+    # path('', TemplateView.as_view(template_name="index.html"), name='index'),
+    path('', Index.as_view(), name='index'),
+    path('accounts/login', LoginView.as_view(template_name='index.html'), name="login"),
+    path('logout', logout_then_login, name='logout'),
+    path('register_user', SignUp.as_view(), name='register_user'),
+    path('register_movie', RegisterMovie.as_view(), name='register_movie'),
+    path('movie_list', MovieList.as_view(), name='movie_list'),
+    url(r'^movie_update/(?P<pk>\d+)$', MovieUpdate.as_view(), name='movie_update'),
+    url(r'^movie_delete/(?P<pk>\d+)$', MovieDelete.as_view(), name='movie_delete'),
+    url(r'^movie_detail/(?P<pk>\d+)$', MovieDetail.as_view(), name='movie_detail'),
+    path('register_rating', RegisterMovieRating.as_view(), name='register_rating'),
+
 ]

@@ -133,9 +133,9 @@
                     </button>
                 </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
+                <div class="collapse navbar-collapse navbar-left" id="bs-example-navbar-collapse-1">
                     <nav>
-                        <ul class="nav navbar-nav">
+                        <ul class="nav navbar-nav navbar-right">
                             <li class="active"><a href="{% url 'index' %}">Home</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Genres <b
@@ -178,19 +178,34 @@
                                 </ul>
                             </li>
                             <li><a href="{% static 'Template/series.html' %}">tv - series</a></li>
-                            <li><a href="{% static 'Template/news.html' %}">news</a></li>
-                            <li><a href="{% static 'Template/short-codes.html' %}">Short Codes</a></li>
-                            <li><a href="{% static 'Template/list.html' %}">A - z list</a></li>
-                            {% if request.user.is_superuser %}
+                            {% if not request.user.is_anonymous %}
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options<b
                                             class="caret"></b></a>
-                                    <ul class="dropdown-menu multi-column columns-3">
+                                    <ul class="dropdown-menu multi-column1 column-3">
                                         <li>
-                                            <div class="col-sm-4">
+                                            <div class="col-sm-8">
+                                                <ul class="multi-column-dropdown">
+                                                    <li><a href="{% url 'register_rating' %}">Register Rating Movie</a></li>
+                                                    <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
+                                                    <li><a href="{% static 'Template/genres.html' %}">Options3</a></li>
+                                                </ul>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            {% if request.user.is_superuser %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options Admin<b
+                                            class="caret"></b></a>
+                                    <ul class="dropdown-menu multi-column1 columns-3">
+                                        <li>
+                                            <div class="col-sm-8">
                                                 <ul class="multi-column-dropdown">
                                                     <li><a href="{% url 'register_movie' %}">Register Movies</a></li>
-                                                    <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
+                                                    <li><a href="{% url 'movie_list' %}">List Movies</a></li>
                                                     <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
                                                     <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
                                                 </ul>
@@ -209,7 +224,13 @@
     <!-- //nav -->
 {% endblock %}
 
-
+{% block errors %}
+    {% if form.errors %}
+        <div class="container" style="width: 60%; border:1px solid black;margin-top: 10%; margin-bottom: 10%">
+            <h2 style="" class="text-danger">{{ form.errors }}</h2>
+        </div>
+    {% endif %}
+{% endblock %}
 <!--==========================
   Content
 ============================-->
