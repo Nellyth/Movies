@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from apps.movies.models import Movie, MovieRate
+from apps.movies.models import Movie, MovieRate, UserToken
 from apps.movies.choices import movie_genre, movie_rating
 
 
@@ -88,3 +88,11 @@ class RatingMoviesForm(forms.ModelForm):
             'rating': forms.Select(choices=movie_rating, attrs={'class': 'form-control'}),
             'comment': forms.Textarea(attrs={'class': 'form-control'}),
         }
+
+
+class UserTokenForm(forms.ModelForm):
+    class Meta:
+        model = UserToken
+        fields = [
+            'user',
+        ]

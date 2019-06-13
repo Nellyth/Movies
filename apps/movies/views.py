@@ -1,10 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView, ListView, DetailView, UpdateView, DeleteView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.models import User
-from apps.movies.forms import UserForm, MoviesForm, RatingMoviesForm
-from apps.movies.models import Movie, MovieRate
+from apps.movies.forms import UserForm, MoviesForm, RatingMoviesForm, UserTokenForm
+from apps.movies.models import Movie, MovieRate, UserToken
+from django.contrib.auth import logout as auth_logout
+from django.conf import settings
+from django.shortcuts import resolve_url
 
 
 class Index(ListView):
@@ -56,6 +62,13 @@ class MovieDelete(LoginRequiredMixin, DeleteView):
 class MovieDetail(DetailView):
     model = Movie
     template_name = 'detail_movie.html'
+    second_form_class = RatingMoviesForm
+
+    def get_context_data(self, **kwargs):
+        context = super(MovieDetail, self).get_context_data(**kwargs)
+        if 'form2' not in context:
+            context['form2'] = self.second_form_class(self.request.GET)
+        return context
 
 
 class RegisterMovieRating(LoginRequiredMixin, CreateView):
@@ -67,10 +80,63 @@ class RegisterMovieRating(LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object
         form = self.form_class(request.POST)
-        form.user = User.objects.get(pk=request.user.id)
-        form.movie = Movie.objects.get(pk=request.POST.get('movie'))
         if form.is_valid():
-            form.save()
+            data = form.save(commit=False)
+            data.user = request.user
+            data.save()
             return HttpResponseRedirect(self.get_success_url())
         else:
             return self.render_to_response(self.get_context_data(form=form))
+
+
+class LoginViewModified(LoginView):
+    form_class_second = UserTokenForm
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        user = User.objects.get(username=request.POST.get('username'))
+        form_second = self.form_class_second()
+        if form.is_valid():
+            try:
+                UserToken.objects.get(user=user)
+            except Exception:
+                data = form_second.save(commit=False)
+                data.user = user
+                data.save()
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+
+class LogoutViewModified(LogoutView):
+    form_class_second = UserTokenForm
+
+    def post(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(username=request.user)
+            form_second = self.form_class_second()
+            try:
+                UserToken.objects.get(user=user)
+                erase = UserToken.objects.get(user=user).delete()
+                data = form_second.save(commit=False)
+                data.erase.delete()
+                data.save()
+            except Exception:
+                pass
+        except Exception:
+            return self.get(request, *args, **kwargs)
+
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        self.post(request, *args, **kwargs)
+        auth_logout(request)
+        next_page = self.get_next_page()
+        if next_page:
+            # Redirect to this page until the session has been cleared.
+            return HttpResponseRedirect(next_page)
+        return super().dispatch(request, *args, **kwargs)
+
+
+def logout_then_login_modified(request, login_url=None):
+    login_url = resolve_url(login_url or settings.LOGIN_URL)
+    return LogoutViewModified.as_view(next_page=login_url)(request)

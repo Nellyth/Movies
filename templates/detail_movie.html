@@ -89,28 +89,30 @@
                                     <div class="agile-info-wthree-box">
                                         <form method="post" action="{% url 'register_rating' %}">
                                             {% csrf_token %}
-                                            <input type="text" style="display: none" name="movie"
-                                                   value="{{ object.id }}"
-                                                   class="form-control" required>
-                                            <label for="rating">Rating</label>
-                                            <select name="rating" required class="form-control">
-                                                <option selected disabled>----------</option>
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5">5</option>
-                                                <option value="6">6</option>
-                                                <option value="7">7</option>
-                                                <option value="8">8</option>
-                                                <option value="9">9</option>
-                                                <option value="10">10</option>
-                                            </select>
-                                            <br>
-                                            <label for="comment">Detail</label>
-                                            <textarea placeholder="comment" name='comment' required
-                                                      class="form-control"></textarea>
-                                            <input type="submit" value="SEND">
+                                            <div class="row">
+                                                <input type="text" style="display: none" name="movie"
+                                                       value="{{ object.id }}"
+                                                       class="form-control" required>
+                                                <div class="col-md-8">
+                                                    <div class="form-group">
+                                                        <label class="upper"
+                                                               for="{{ form2.rating.name }}">{{ form2.rating.label }}</label>
+                                                        {{ form2.rating }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-10">
+                                                    <div class="form-group">
+                                                        <label class="upper"
+                                                               for="{{ form2.comment.name }}">{{ form2.comment.label }}</label>
+                                                        {{ form2.comment }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-8 col-md-offset-2">
+                                                    <div class="form-group text-center">
+                                                        <input type="submit" value="SEND">
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="clearfix"></div>
                                         </form>
                                     </div>

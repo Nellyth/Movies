@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from apps.movies.choices import movie_genre, movie_rating
+import uuid
 
 
 def movie_directory_path(instance, filename):
@@ -30,7 +31,7 @@ class MovieRate(models.Model):
     comment = models.TextField(null=False, max_length=150)
 
     def __str__(self):
-        return 'Movie: {}, User {}'.format(self.movie.title, self.user.username)
+        return 'Movie: {}'.format(self.movie.title)
 
 
 class MovieActor(models.Model):
@@ -68,3 +69,8 @@ class Country(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UserToken(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    token = models.UUIDField(default=uuid.uuid4)
