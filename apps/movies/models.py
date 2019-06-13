@@ -9,13 +9,14 @@ def movie_directory_path(instance, filename):
 
 
 class Movie(models.Model):
-    title = models.CharField(max_length=40, unique=True, null=False)
+    title = models.CharField(max_length=100, unique=True, null=False)
     duration = models.IntegerField(null=False)
-    poster = models.ImageField(upload_to=movie_directory_path, null=False)
+    poster = models.ImageField(upload_to=movie_directory_path, null=True)
     detail = models.TextField(null=False, max_length=500)
     trailer_url = models.URLField(null=True, blank=True)
-    genre = models.CharField(max_length=25, null=False, choices=movie_genre)
+    genre = models.CharField(max_length=30, null=False)
     original_language = models.ForeignKey('Language', null=True, on_delete=models.SET_NULL)
+    release_date = models.DateField(null=True)
     country = models.ForeignKey('Country', null=True, on_delete=models.SET_NULL)
     directors = models.ManyToManyField('MovieDirector')
     actors = models.ManyToManyField('MovieActor')
@@ -35,7 +36,7 @@ class MovieRate(models.Model):
 
 
 class MovieActor(models.Model):
-    name = models.CharField(max_length=25, unique=True, null=False)
+    name = models.CharField(max_length=40, unique=True, null=False)
     age = models.PositiveIntegerField(null=False)
 
     def __str__(self):
@@ -43,7 +44,7 @@ class MovieActor(models.Model):
 
 
 class MovieDirector(models.Model):
-    name = models.CharField(max_length=25, unique=True, null=False)
+    name = models.CharField(max_length=40, unique=True, null=False)
     age = models.PositiveIntegerField(null=False)
 
     def __str__(self):
@@ -58,14 +59,14 @@ class Genre(models.Model):
 
 
 class Language(models.Model):
-    name = models.CharField(max_length=15, unique=True, null=False)
+    name = models.CharField(max_length=30, unique=True, null=False)
 
     def __str__(self):
         return self.name
 
 
 class Country(models.Model):
-    name = models.CharField(max_length=15, unique=True, null=False)
+    name = models.CharField(max_length=30, unique=True, null=False)
 
     def __str__(self):
         return self.name

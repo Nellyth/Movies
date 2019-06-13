@@ -38,6 +38,7 @@ class MoviesForm(forms.ModelForm):
             'trailer_url',
             'genre',
             'original_language',
+            'release_date',
             'country',
             'directors',
             'actors'
@@ -51,6 +52,7 @@ class MoviesForm(forms.ModelForm):
             'trailer_url': 'Trailer url',
             'genre': 'Genre',
             'original_language': 'Original language',
+            'release_date': 'Release Date',
             'country': 'Country',
             'directors': 'Directors',
             'actors': 'Actors'
@@ -62,6 +64,7 @@ class MoviesForm(forms.ModelForm):
             'detail': forms.Textarea(attrs={'class': 'form-control'}),
             'genre': forms.Select(choices=movie_genre, attrs={'class': 'form-control'}),
             'original_language': forms.Select(attrs={'class': 'form-control'}),
+            'release_date': forms.DateInput(attrs={'class': 'form-control'}),
             'country': forms.Select(attrs={'class': 'form-control'}),
             'directors': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'actors': forms.SelectMultiple(attrs={'class': 'form-control'}),

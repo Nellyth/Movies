@@ -59,6 +59,13 @@
                     <div class="col-md-8 col-md-offset-2">
                         <div class="form-group">
                             <label class="upper"
+                                   for="{{ form.release_date.name }}">{{ form.release_date.label }}</label>
+                            {{ form.release_date }}
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-md-offset-2">
+                        <div class="form-group">
+                            <label class="upper"
                                    for="{{ form.country.name }}">{{ form.country.label }}</label>
                             {{ form.country }}
                         </div>
