@@ -9,8 +9,11 @@ def data(value):
 
 @register.filter
 def url(value):
-    if '=' in value:
-        value = value.split('=')
-        return value[1]
-    else:
+    try:
+        if '=' in value:
+            value = value.split('=')
+            return value[1]
+        else:
+            return value
+    except Exception:
         return value

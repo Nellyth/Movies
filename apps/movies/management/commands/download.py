@@ -25,7 +25,8 @@ class Command(BaseCommand):
 
                 for data in response['Search']:
                     sub_response = requests.get(
-                        'http://www.omdbapi.com/?i={}&plot=full&apikey=7225a9db&type=movie'.format(data['imdbID'])).json()
+                        'http://www.omdbapi.com/?i={}&plot=full&apikey=7225a9db&type=movie'.format(
+                            data['imdbID'])).json()
 
                     rang_lan = sub_response['Language'].replace(', ', ',').split(',')
                     rang_act = sub_response['Actors'].replace(', ', ',').split(',')
@@ -66,8 +67,6 @@ class Command(BaseCommand):
                         title = sub_response['Title']
                         genre = sub_response['Genre'].replace(', ', ',').split(',')[0]
                         duration = sub_response['Runtime'].split(' ')[0]
-                        directors = MovieDirector.objects.get(name=rang_dir[0])
-                        actors = MovieActor.objects.get(name=rang_act[0])
                         detail = sub_response['Plot']
                         original_language = Language.objects.get(name=rang_lan[0])
                         country = Country.objects.get(name=rang_cou[0])
@@ -81,14 +80,18 @@ class Command(BaseCommand):
                         movie.directors.add(directors)
                         """
                         movie, _ = Movie.objects.update_or_create(title=title,
-                                                                  defaults={'title': title, 'release_date': release_date,
+                                                                  defaults={'title': title,
+                                                                            'release_date': release_date,
                                                                             'duration': duration,
                                                                             'genre': genre, 'detail': detail,
                                                                             'original_language': original_language,
                                                                             'country': country, 'poster': poster})
 
-                        movie.actors.add(actors)
-                        movie.directors.add(directors)
+                        for actor in rang_act:
+                            movie.actors.add(MovieActor.objects.get(name=actor))
+
+                        for director in rang_dir:
+                            movie.directors.add(MovieDirector.objects.get(name=director))
 
                         print('pelicula se agrego')
                     except Exception:

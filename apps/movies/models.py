@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
-from apps.movies.choices import movie_genre, movie_rating
+from apps.movies.choices import movie_rating
+from django.urls import reverse_lazy
 import uuid
 
 
@@ -20,9 +21,13 @@ class Movie(models.Model):
     country = models.ForeignKey('Country', null=True, on_delete=models.SET_NULL)
     directors = models.ManyToManyField('MovieDirector')
     actors = models.ManyToManyField('MovieActor')
+    slug = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse_lazy('movie-detail', args=(self.title,))
 
 
 class MovieRate(models.Model):

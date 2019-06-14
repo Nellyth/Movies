@@ -4,13 +4,14 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, FormView
 from django.contrib.auth.models import User
-from apps.movies.forms import UserForm, MoviesForm, RatingMoviesForm, UserTokenForm
+from apps.movies.forms import UserForm, MoviesForm, RatingMoviesForm, UserTokenForm, QueryMovieForm
 from apps.movies.models import Movie, MovieRate, UserToken
 from django.contrib.auth import logout as auth_logout
 from django.conf import settings
 from django.shortcuts import resolve_url
+from django.core.management import call_command
 
 
 class Index(ListView):
@@ -43,7 +44,7 @@ class MovieList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super(MovieList, self).get_queryset()
-        return qs
+        return qs.order_by('-id')
 
 
 class MovieUpdate(LoginRequiredMixin, UpdateView):
@@ -63,6 +64,8 @@ class MovieDetail(DetailView):
     model = Movie
     template_name = 'detail_movie.html'
     second_form_class = RatingMoviesForm
+    slug_field = 'slug'
+    query_pk_and_slug = False
 
     def get_context_data(self, **kwargs):
         context = super(MovieDetail, self).get_context_data(**kwargs)
@@ -140,3 +143,14 @@ class LogoutViewModified(LogoutView):
 def logout_then_login_modified(request, login_url=None):
     login_url = resolve_url(login_url or settings.LOGIN_URL)
     return LogoutViewModified.as_view(next_page=login_url)(request)
+
+
+class QueryMovieView(FormView):
+    template_name = 'query_movies.html'
+    form_class = QueryMovieForm
+    success_url = reverse_lazy('movie_list')
+
+    def form_valid(self, form):
+        data = form.cleaned_data['query']
+        call_command('download', '-s', data)
+        return super().form_valid(form)

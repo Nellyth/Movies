@@ -1,7 +1,5 @@
-from django.contrib.auth import logout
-
 from apps.movies.models import UserToken
-from django.shortcuts import redirect
+from django.contrib.auth.models import User
 
 
 class LoginMiddleware:
@@ -9,16 +7,13 @@ class LoginMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if not request.user.is_anonymous:
-            try:
-                UserToken.objects.get(user=request.user)
-            except Exception:
-                logout(request)
-                response = redirect('logout')
-                response.delete_cookie('user_location')
-                return response
+        try:
+            token = request.META.get('HTTP_AUTHORIZATION')
+            token = UserToken.objects.get(token=token)
+            request.user = token.user
 
-        if request.path == '/movie/logout':
-            print('Se Ha Deslogueado')
+        except Exception:
+            pass
+        
         response = self.get_response(request)
         return response

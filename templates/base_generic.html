@@ -37,6 +37,7 @@
         <script type="text/javascript" src="{% static 'Template/js/move-top.js' %}"></script>
         <script type="text/javascript" src="{% static 'Template/js/easing.js' %}"></script>
         <script src="{% static 'js/Scroll.js' %}"></script>
+        <script src=" {% static 'js/modal.js' %}"></script>
     {% endblock %}
     {% block extrahead %}{% endblock %}
     {% block title %}<title>ThunderBlack Movies</title>{% endblock %}
@@ -71,52 +72,87 @@
     </div>
 {% endblock %}
 
-<!-- bootstrap-pop-up -->
-<div class="modal video-modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                Sign In & Sign Up
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <section>
-                <div class="modal-body">
-                    <div class="w3_login_module">
-                        <div class="module form-module">
-                            <div class="toggle"><i class="fa fa-times fa-pencil"></i>
-                                <div class="tooltip">Click Me</div>
+{% block modal %}
+    <!-- bootstrap-pop-up -->
+    <div class="modal video-modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Sign In & Sign Up
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <section>
+                    <div class="modal-body">
+                        <div class="w3_login_module">
+                            <div class="module form-module">
+                                <div class="toggle"><i class="fa fa-times fa-pencil"></i>
+                                    <div class="tooltip">Click Me</div>
+                                </div>
+                                <div class="form">
+                                    <h3>Login to your account</h3>
+                                    <form action="{% url 'login' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="text" name="username" placeholder="Username" required="">
+                                        <input type="password" name="password" placeholder="Password" required="">
+                                        <input type="submit" value="Login">
+                                    </form>
+                                </div>
+                                <div class="form">
+                                    <h3>Create an account</h3>
+                                    <form action="{% url 'register_user' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="text" name="username" placeholder="Username" required="">
+                                        <input type="password" name="password1" placeholder="Password" required="">
+                                        <input type="password" name="password2" placeholder="Repeat Password"
+                                               required="">
+                                        <input type="submit" value="Register">
+                                    </form>
+                                </div>
+                                <div class="cta"><a href="#">Forgot your password?</a></div>
                             </div>
-                            <div class="form">
-                                <h3>Login to your account</h3>
-                                <form action="{% url 'login' %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="text" name="username" placeholder="Username" required="">
-                                    <input type="password" name="password" placeholder="Password" required="">
-                                    <input type="submit" value="Login">
-                                </form>
-                            </div>
-                            <div class="form">
-                                <h3>Create an account</h3>
-                                <form action="{% url 'register_user' %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="text" name="username" placeholder="Username" required="">
-                                    <input type="password" name="password1" placeholder="Password" required="">
-                                    <input type="password" name="password2" placeholder="Repeat Password"
-                                           required="">
-                                    <input type="submit" value="Register">
-                                </form>
-                            </div>
-                            <div class="cta"><a href="#">Forgot your password?</a></div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
     </div>
-</div>
-<script src=" {% static 'js/modal.js' %}"></script>
-<!-- //bootstrap-pop-up -->
+
+
+    <div class="modal video-modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModal2">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Query Movie
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <section>
+                    <div class="modal-body">
+                        <div class="w3_login_module">
+                            <div class="module form-module">
+                                <div>
+                                </div>
+                                <div class="form">
+                                    <h3>Search your Movies</h3>
+                                    <form action="{% url 'query_movie' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="text" name="query" placeholder="Search" required="">
+                                        <input type="submit" value="Go!">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- //bootstrap-pop-up -->
+{% endblock %}
 
 {% block navbar %}
     <!-- nav -->
@@ -186,7 +222,8 @@
                                         <li>
                                             <div class="col-sm-8">
                                                 <ul class="multi-column-dropdown">
-                                                    <li><a href="{% url 'register_rating' %}">Register Rating Movie</a></li>
+                                                    <li><a href="{% url 'register_rating' %}">Register Rating Movie</a>
+                                                    </li>
                                                     <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
                                                     <li><a href="{% static 'Template/genres.html' %}">Options3</a></li>
                                                 </ul>
@@ -206,7 +243,8 @@
                                                 <ul class="multi-column-dropdown">
                                                     <li><a href="{% url 'register_movie' %}">Register Movies</a></li>
                                                     <li><a href="{% url 'movie_list' %}">List Movies</a></li>
-                                                    <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
+                                                    <li><a href="#" data-toggle="modal" data-target="#myModal2">Query
+                                                        Movie</a></li>
                                                     <li><a href="{% static 'Template/genres.html' %}">Options2</a></li>
                                                 </ul>
                                             </div>

@@ -99,3 +99,7 @@ class UserTokenForm(forms.ModelForm):
         fields = [
             'user',
         ]
+
+
+class QueryMovieForm(forms.Form):
+    query = forms.CharField(max_length=40)

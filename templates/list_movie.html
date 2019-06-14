@@ -48,8 +48,8 @@
                                     {{ data.name }}<br>
                                 {% endfor %}
                             </td>
-                            <td><a href="{% url 'movie_update' object.id %}">Edit</a></td>
-                            <td><a href="{% url 'movie_delete' object.id %}">Erase</a></td>
+                            <td><a href="{% url 'movie_update' object.slug %}">Edit</a></td>
+                            <td><a href="{% url 'movie_delete' object.slug %}">Erase</a></td>
                         </tr>
                     {% endfor %}
                 </table>
