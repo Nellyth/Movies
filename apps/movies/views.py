@@ -1,17 +1,22 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, FormView
 from django.contrib.auth.models import User
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.renderers import JSONRenderer
+
 from apps.movies.forms import UserForm, MoviesForm, RatingMoviesForm, UserTokenForm, QueryMovieForm
 from apps.movies.models import Movie, MovieRate, UserToken
 from django.contrib.auth import logout as auth_logout
 from django.conf import settings
 from django.shortcuts import resolve_url
 from django.core.management import call_command
+
+from apps.movies.serializers import MovieSerializer
 
 
 class Index(ListView):
@@ -154,3 +159,49 @@ class QueryMovieView(FormView):
         data = form.cleaned_data['query']
         call_command('download', '-s', data)
         return super().form_valid(form)
+
+
+class MovieListView(ListView):
+    model = Movie
+    content_type = 'application/json'
+    response_class = HttpResponse
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(MovieListView, self).get_context_data(object_list=object_list, **kwargs)
+        context.update({'serializer_data': JSONRenderer().render(MovieSerializer(self.get_queryset(), many=True).data)})
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        response_kwargs.setdefault('content_type', self.content_type)
+        return self.response_class(context.get('serializer_data'), **response_kwargs)
+
+
+class MovieDetailView(DetailView):
+    model = Movie
+    content_type = 'application/json'
+    response_class = HttpResponse
+    slug_field = 'slug'
+    query_pk_and_slug = False
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        if self.object:
+            context['object'] = self.object
+        context.update({'serializer_data': JSONRenderer().render(MovieSerializer(self.object).data)})
+        return super().get_context_data(**context)
+
+    def render_to_response(self, context, **response_kwargs):
+        response_kwargs.setdefault('content_type', self.content_type)
+        return self.response_class(context.get('serializer_data'), **response_kwargs)
+
+
+class MovieListView2(ListAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+
+
+class MovieDetailView2(RetrieveAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'

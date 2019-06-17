@@ -46,39 +46,31 @@ class Command(BaseCommand):
                         Country.objects.get_or_create(name=countr, defaults={'name': countr})
 
                     try:
-                        release_date = sub_response['Released']
-                        meses = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                        for i in meses:
-                            if i in release_date:
-                                x = release_date.replace(i, str(meses.index(i) + 1)).split(' ')
-                                if len(x[0]) == 1:
-                                    x[0] = '0{}'.format(x[0])
-                                if len(x[1]) == 1:
-                                    x[1] = '0{}'.format(x[1])
-                                release_date = '{}-{}-{}'.format(x[1], x[0], x[2])
+                        try:
+                            release_date = sub_response['Released']
+                            release_date = release_date.replace(' ', '-')
+                            release_date = datetime.strptime(release_date, '%d-%b-%Y')
+                        except Exception:
+                            release_date = None
 
-                        release_date = datetime.strptime(release_date, '%m-%d-%Y')
-                        response = requests.get(sub_response['Poster'])
-                        f = open('media/movie/{}.{}'.format(sub_response['Title'],
-                                                            sub_response['Poster'].split('.')[-1]), 'wb')
-                        f.write(response.content)
-                        f.close()
+                        try:
+                            response = requests.get(sub_response['Poster'])
+                            f = open('media/movie/{}.{}'.format(sub_response['Title'],
+                                                                sub_response['Poster'].split('.')[-1]), 'wb')
+                            f.write(response.content)
+                            f.close()
+                            poster = 'movie/{}.{}'.format(sub_response['Title'],
+                                                          sub_response['Poster'].split('.')[-1])
+                        except Exception:
+                            poster = 'movie/{}.{}'.format('NA', '.jpg')
 
                         title = sub_response['Title']
                         genre = sub_response['Genre'].replace(', ', ',').split(',')[0]
-                        duration = sub_response['Runtime'].split(' ')[0]
-                        detail = sub_response['Plot']
+                        duration = 0 if sub_response['Runtime'].split(' ')[0] == 'N/A' else \
+                            sub_response['Runtime'].split(' ')[0]
+                        detail = None if sub_response['Plot'] == 'N/A' else sub_response['Plot']
                         original_language = Language.objects.get(name=rang_lan[0])
                         country = Country.objects.get(name=rang_cou[0])
-                        poster = 'movie/{}.{}'.format(sub_response['Title'],
-                                                      sub_response['Poster'].split('.')[-1])
-                        """
-                        movie = Movie.objects.create(title=title, release_date=release_date, duration=duration, genre=genre,
-                                                     detail=detail, original_language=original_language, country=country,
-                                                     poster=poster)
-                        movie.actors.add(actors)
-                        movie.directors.add(directors)
-                        """
                         movie, _ = Movie.objects.update_or_create(title=title,
                                                                   defaults={'title': title,
                                                                             'release_date': release_date,
@@ -93,9 +85,9 @@ class Command(BaseCommand):
                         for director in rang_dir:
                             movie.directors.add(MovieDirector.objects.get(name=director))
 
-                        print('pelicula se agrego')
-                    except Exception:
-                        print('pelicula no agregada')
-            except Exception:
-                print('Url no valida')
-            print(Movie.objects.all())
+                        print('movie added')
+                    except Exception as e:
+                        print('movie not added, Exception: {}'.format(str(e)))
+
+            except Exception as e:
+                print('Url does not validate'.format(str(e)))
