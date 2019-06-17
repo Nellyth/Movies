@@ -1,4 +1,6 @@
 from django import template
+from apps.movies.models import MovieRate
+
 register = template.Library()
 
 
@@ -17,3 +19,12 @@ def url(value):
             return value
     except Exception:
         return value
+
+
+@register.filter
+def movie_rate(value):
+    try:
+        data = MovieRate.objects.filter(movie=value).get_best_rated()
+        return data.first()['rate']
+    except Exception:
+        return ''

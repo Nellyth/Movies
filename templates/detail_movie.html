@@ -47,14 +47,16 @@
                                         <br><br>
                                         <table border="1" width="100%">
                                             <tr class="register">
-                                                <th style="width: 25%">Duration</th>
-                                                <th style="width: 25%">Genre</th>
-                                                <th style="width: 25%">Original Language</th>
-                                                <th style="width: 25%">Country</th>
+                                                <th style="width: 20%">Duration</th>
+                                                <th style="width: 20%">Genre</th>
+                                                <th style="width: 20%">Rating</th>
+                                                <th style="width: 20%">Original Language</th>
+                                                <th style="width: 20%">Country</th>
                                             </tr>
                                             <tr class="register2">
                                                 <td>{{ object.duration }} min</td>
                                                 <td>{{ object.genre }}</td>
+                                                <td>{{ object.pk|movie_rate }}</td>
                                                 <td>{{ object.original_language }}</td>
                                                 <td>{{ object.country }}</td>
                                             </tr>

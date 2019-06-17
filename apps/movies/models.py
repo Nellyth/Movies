@@ -4,6 +4,8 @@ from apps.movies.choices import movie_rating
 from django.urls import reverse_lazy
 import uuid
 
+from apps.movies.queryset import MovieRateQueryset
+
 
 def movie_directory_path(instance, filename):
     return f'movie/{instance.title}/{filename}'
@@ -35,6 +37,8 @@ class MovieRate(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     rating = models.IntegerField(choices=movie_rating, null=False)
     comment = models.TextField(null=False, max_length=150)
+
+    objects = MovieRateQueryset.as_manager()
 
     def __str__(self):
         return 'Movie: {}'.format(self.movie.title)

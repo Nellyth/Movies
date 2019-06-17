@@ -29,12 +29,12 @@
                     </tr>
                     {% for object in object_list %}
                         <tr>
-                            <td>{{ object.title }}</td>
+                            <td><a href="{% url 'movie_detail' object.slug %}">{{ object.title }}</a></td>
                             <td>{{ object.duration }}</td>
                             <td><img style="width:100px; height: 100px" src="{{ object.poster.url }}" alt=""></td>
                             <td>{{ object.detail }}</td>
                             <td><a href="{{ object.trailer_url }}">{{ object.trailer_url }}</a></td>
-                            <td>{{ object.rating }}</td>
+                            <td>{{ object.pk|movie_rate }}</td>
                             <td>{{ object.genre }}</td>
                             <td>{{ object.original_language }}</td>
                             <td>{{ object.country }}</td>
