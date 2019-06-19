@@ -22,7 +22,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('movie/', include('apps.movies.urls'), name='movie'),
+    path('', include('apps.movies.urls'), name='movie'),
+    path('api/{}/'.format(settings.API_VERSION), include('apps.movies.api.urls')),
 ]
 
 if settings.DEBUG:

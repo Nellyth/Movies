@@ -119,6 +119,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+API_VERSION = 'V1'
 
 try:
     exec(open(os.path.join(BASE_DIR, 'movie_project/local_settings.py')).read())

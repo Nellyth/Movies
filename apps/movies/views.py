@@ -6,17 +6,15 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, FormView
 from django.contrib.auth.models import User
-from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.renderers import JSONRenderer
 
+from apps.movies.api.serializers import MovieSerializer
 from apps.movies.forms import UserForm, MoviesForm, RatingMoviesForm, UserTokenForm, QueryMovieForm
 from apps.movies.models import Movie, MovieRate, UserToken
-from django.contrib.auth import logout as auth_logout
 from django.conf import settings
 from django.shortcuts import resolve_url
 from django.core.management import call_command
-
-from apps.movies.serializers import MovieSerializer, MovieRateSerializer, MovieSerializer2
+from django.contrib.auth import logout as auth_logout
+from rest_framework.renderers import JSONRenderer
 
 
 class Index(ListView):
@@ -124,7 +122,6 @@ class LogoutViewModified(LogoutView):
             user = User.objects.get(username=request.user)
             form_second = self.form_class_second()
             try:
-                UserToken.objects.get(user=user)
                 erase = UserToken.objects.get(user=user).delete()
                 data = form_second.save(commit=False)
                 data.erase.delete()
@@ -193,30 +190,3 @@ class MovieDetailView(DetailView):
     def render_to_response(self, context, **response_kwargs):
         response_kwargs.setdefault('content_type', self.content_type)
         return self.response_class(context.get('serializer_data'), **response_kwargs)
-
-
-class MovieDetailView2(RetrieveAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieSerializer
-    lookup_field = 'slug'
-    lookup_url_kwarg = 'slug'
-
-
-class MovieRateListView(ListAPIView):
-    queryset = MovieRate.objects.all()
-    serializer_class = MovieRateSerializer
-
-
-class MovieRateDetailView(RetrieveAPIView):
-    queryset = MovieRate.objects.all()
-    serializer_class = MovieRateSerializer
-
-
-class MovieCreateView(ListCreateAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieSerializer2
-
-
-class MovieUpdateView(RetrieveUpdateDestroyAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieSerializer2

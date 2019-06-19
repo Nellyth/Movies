@@ -1,5 +1,6 @@
 from apps.movies.models import UserToken
-from django.contrib.auth.models import User
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 
 class LoginMiddleware:
@@ -8,12 +9,17 @@ class LoginMiddleware:
 
     def __call__(self, request):
         try:
-            token = request.META.get('HTTP_AUTHORIZATION')
-            token = UserToken.objects.get(token=token)
-            request.user = token.user
-
+            if request.META.get('HTTP_AUTHORIZATION'):
+                token = request.META.get('HTTP_AUTHORIZATION')
+                token = UserToken.objects.get(token=token)
+                request.user = token.user
+            if not request.user.is_anonymous:
+                UserToken.objects.get(user=request.user)
         except Exception:
-            pass
-        
+            logout(request)
+            response = redirect('logout')
+            response.delete_cookie('user_location')
+            return response
+
         response = self.get_response(request)
         return response
