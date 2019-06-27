@@ -18,7 +18,7 @@ class Command(BaseCommand):
         search = options['search']
         title = options['title']
 
-        if search == True:
+        if search:
             response = requests.get(
                 'http://www.omdbapi.com/?s={}&plot=full&apikey=7225a9db&type=movie'.format(title)).json()
             try:

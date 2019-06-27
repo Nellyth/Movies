@@ -93,13 +93,5 @@ class RatingMoviesForm(forms.ModelForm):
         }
 
 
-class UserTokenForm(forms.ModelForm):
-    class Meta:
-        model = UserToken
-        fields = [
-            'user',
-        ]
-
-
 class QueryMovieForm(forms.Form):
     query = forms.CharField(max_length=40)

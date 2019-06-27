@@ -1,7 +1,7 @@
 from django.urls import path
 
 from apps.movies.views import SignUp, RegisterMovie, Index, MovieList, MovieUpdate, MovieDelete, MovieDetail, \
-    RegisterMovieRating, LoginViewModified, logout_then_login_modified, QueryMovieView, MovieDetailView
+    RegisterMovieRating, LoginViewModified, logout_then_login_modified, QueryMovieView, MovieDetailView, SearchMovieList
 
 urlpatterns = [
     path('', Index.as_view(), name='index'),
@@ -10,6 +10,7 @@ urlpatterns = [
     path('register_user', SignUp.as_view(), name='register_user'),
     path('register_movie', RegisterMovie.as_view(), name='register_movie'),
     path('movie_list', MovieList.as_view(), name='movie_list'),
+    path('search_movie_list/', SearchMovieList.as_view(), name='search_movie_list'),
     path('movie_update/<slug>/', MovieUpdate.as_view(), name='movie_update'),
     path('movie_delete/<slug>/', MovieDelete.as_view(), name='movie_delete'),
     path('movie_detail/<slug>/', MovieDetail.as_view(), name='movie_detail'),

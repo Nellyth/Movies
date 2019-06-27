@@ -2,10 +2,12 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from apps.movies.api.viewsets import CreateListRetrieveUpdateDestroyViewSet, MovieDetailView2, MovieRateListView, \
-    MovieRateDetailView, MovieListCreateView, MovieRetrieveUpdateDestroyView
+    MovieRateDetailView, MovieListCreateView, MovieRetrieveUpdateDestroyView, MovieViewSet, MovieRateViewSet
 
 router = DefaultRouter()
 router.register('movie/v2', CreateListRetrieveUpdateDestroyViewSet)
+router.register('movie/v4', MovieViewSet)
+router.register('rate', MovieRateViewSet)
 
 urlpatterns = [
     path('movie_detail_view2/<slug>/', MovieDetailView2.as_view(), name='movie_detail_view2'),

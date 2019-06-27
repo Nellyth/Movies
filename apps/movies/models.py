@@ -84,3 +84,6 @@ class Country(models.Model):
 class UserToken(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     token = models.UUIDField(default=uuid.uuid4)
+
+    def __str__(self):
+        return str(self.token)

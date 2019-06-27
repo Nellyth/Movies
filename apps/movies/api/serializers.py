@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-
 from apps.movies.models import MovieRate, Movie
 
 
@@ -15,7 +14,9 @@ class MovieSerializer(serializers.Serializer):
     slug = serializers.CharField(required=True)
 
 
-class MovieRateSerializer(serializers.Serializer):
+class MovieRateSerializer(ModelSerializer):
+    pk = serializers.IntegerField(source='id', read_only=True)
+    user = serializers.StringRelatedField()
     movie = serializers.HyperlinkedRelatedField(read_only=True,
                                                 view_name='movie_detail_view2',
                                                 lookup_field='slug',
@@ -23,14 +24,16 @@ class MovieRateSerializer(serializers.Serializer):
 
     class Meta:
         model = MovieRate
-        fields = ('movie', 'user', 'rating', 'comments')
+        fields = ['movie', 'user', 'pk', 'rating', 'comment']
 
 
 class MovieSerializer2(ModelSerializer):
+    pk = serializers.IntegerField(source='id', read_only=True)
+
     class Meta:
         model = Movie
         fields = [
-            'id',
+            'pk',
             'title',
             'duration',
             'poster',

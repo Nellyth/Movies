@@ -2,19 +2,19 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import never_cache
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, FormView
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 
 from apps.movies.api.serializers import MovieSerializer
-from apps.movies.forms import UserForm, MoviesForm, RatingMoviesForm, UserTokenForm, QueryMovieForm
-from apps.movies.models import Movie, MovieRate, UserToken
+from apps.movies.forms import UserForm, MoviesForm, RatingMoviesForm, QueryMovieForm
+from apps.movies.models import Movie, MovieRate
 from django.conf import settings
 from django.shortcuts import resolve_url
-from django.core.management import call_command
-from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import login as auth_login
 from rest_framework.renderers import JSONRenderer
+
+from apps.movies.tasks import command_send_emails_users
 
 
 class Index(ListView):
@@ -47,6 +47,18 @@ class MovieList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super(MovieList, self).get_queryset()
+        return qs.order_by('-id')
+
+
+class SearchMovieList(ListView):
+    template_name = 'list_movie.html'
+    queryset = Movie.objects.all()
+
+    def get_queryset(self):
+        qs = super(SearchMovieList, self).get_queryset()
+        query = self.request.GET.get('search')
+        if query:
+            qs = Movie.objects.filter(title__icontains=query)
         return qs.order_by('-id')
 
 
@@ -96,65 +108,36 @@ class RegisterMovieRating(LoginRequiredMixin, CreateView):
 
 
 class LoginViewModified(LoginView):
-    form_class_second = UserTokenForm
 
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        user = User.objects.get(username=request.POST.get('username'))
-        form_second = self.form_class_second()
-        if form.is_valid():
-            try:
-                UserToken.objects.get(user=user)
-            except Exception:
-                data = form_second.save(commit=False)
-                data.user = user
-                data.save()
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-
-class LogoutViewModified(LogoutView):
-    form_class_second = UserTokenForm
-
-    def post(self, request, *args, **kwargs):
-        try:
-            user = User.objects.get(username=request.user)
-            form_second = self.form_class_second()
-            try:
-                erase = UserToken.objects.get(user=user).delete()
-                data = form_second.save(commit=False)
-                data.erase.delete()
-                data.save()
-            except Exception:
-                pass
-        except Exception:
-            return self.get(request, *args, **kwargs)
-
-    @method_decorator(never_cache)
-    def dispatch(self, request, *args, **kwargs):
-        self.post(request, *args, **kwargs)
-        auth_logout(request)
-        next_page = self.get_next_page()
-        if next_page:
-            # Redirect to this page until the session has been cleared.
-            return HttpResponseRedirect(next_page)
-        return super().dispatch(request, *args, **kwargs)
+    def form_valid(self, form):
+        """Security check complete. Log the user in."""
+        auth_login(self.request, form.get_user())
+        # UserToken.objects.get_or_create(user=self.request.user, defaults={'user': self.request.user})
+        # data = UserToken.objects.get(user=self.request.user)
+        Token.objects.get_or_create(user=self.request.user,
+                                    defaults={'user': self.request.user})
+        return HttpResponseRedirect(self.get_success_url())
 
 
 def logout_then_login_modified(request, login_url=None):
     login_url = resolve_url(login_url or settings.LOGIN_URL)
-    return LogoutViewModified.as_view(next_page=login_url)(request)
+    try:
+        # UserToken.objects.filter(user=request.user).delete()
+        Token.objects.filter(user=request.user).delete()
+    except Exception:
+        pass
+    return LogoutView.as_view(next_page=login_url)(request)
 
 
 class QueryMovieView(FormView):
     template_name = 'query_movies.html'
     form_class = QueryMovieForm
-    success_url = reverse_lazy('movie_list')
+    success_url = reverse_lazy('index')
 
     def form_valid(self, form):
         data = form.cleaned_data['query']
-        call_command('download', '-s', data)
+        data = {'movie': data, 'username': self.request.user.username, 'email': self.request.user.email}
+        command_send_emails_users.delay(data)
         return super().form_valid(form)
 
 
