@@ -17,7 +17,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         search = options['search']
         title = options['title']
-
+        movies_list = ''
         if search:
             response = requests.get(
                 'http://www.omdbapi.com/?s={}&plot=full&apikey=7225a9db&type=movie'.format(title)).json()
@@ -86,8 +86,11 @@ class Command(BaseCommand):
                             movie.directors.add(MovieDirector.objects.get(name=director))
 
                         print('movie added')
+                        movies_list += ' {},'.format(title)
                     except Exception as e:
                         print('movie not added, Exception: {}'.format(str(e)))
 
             except Exception as e:
                 print('Url does not validate'.format(str(e)))
+
+            return movies_list

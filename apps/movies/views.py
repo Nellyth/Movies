@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, FormView
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-
+from celery import chord
 from apps.movies.api.serializers import MovieSerializer
 from apps.movies.forms import UserForm, MoviesForm, RatingMoviesForm, QueryMovieForm
 from apps.movies.models import Movie, MovieRate
@@ -14,7 +14,7 @@ from django.shortcuts import resolve_url
 from django.contrib.auth import login as auth_login
 from rest_framework.renderers import JSONRenderer
 
-from apps.movies.tasks import command_send_emails_users
+from apps.movies.tasks import query_movies, send_email
 
 
 class Index(ListView):
@@ -135,9 +135,15 @@ class QueryMovieView(FormView):
     success_url = reverse_lazy('index')
 
     def form_valid(self, form):
-        data = form.cleaned_data['query']
-        data = {'movie': data, 'username': self.request.user.username, 'email': self.request.user.email}
-        command_send_emails_users.delay(data)
+        movie = form.cleaned_data['query']
+        movie = movie.split(',')
+        user = {'username': self.request.user.username, 'email': self.request.user.email}
+        if len(movie) > 1:
+            callback = send_email.s(user=user)
+            header = [query_movies.s(mov.strip()) for mov in movie]
+            chord(header)(callback)
+        else:
+            chord(query_movies.s(movie))(send_email.s(user=user))
         return super().form_valid(form)
 
 
